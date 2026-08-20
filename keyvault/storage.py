@@ -78,6 +78,14 @@ class Vault:
         if self._data["secrets"].pop(name, None) is None:
             raise VaultError(f"unknown secret: {name}")
 
+    def rename(self, old: str, new: str) -> None:
+        secrets = self._data["secrets"]
+        if old not in secrets:
+            raise VaultError(f"unknown secret: {old}")
+        if new in secrets:
+            raise VaultError(f"secret already exists: {new}")
+        secrets[new] = secrets.pop(old)
+
     def entries(self, tag: str | None = None) -> dict:
         secrets = self._data["secrets"]
         if tag is None:

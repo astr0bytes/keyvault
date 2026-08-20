@@ -19,6 +19,7 @@ python main.py init
 python main.py add GITHUB_TOKEN -t github
 python main.py list
 python main.py get GITHUB_TOKEN
+python main.py rename GITHUB_TOKEN GH_TOKEN
 python main.py export -t github -o .env
 python main.py gen -l 32
 python main.py gen --token

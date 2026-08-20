@@ -53,6 +53,13 @@ def cmd_delete(args):
     print(f"Secret '{args.name}' deleted.")
 
 
+def cmd_rename(args):
+    vault = Vault.open(args.vault, ask_password())
+    vault.rename(args.old, args.new)
+    vault.save()
+    print(f"Secret '{args.old}' renamed to '{args.new}'.")
+
+
 def cmd_export(args):
     vault = Vault.open(args.vault, ask_password())
     lines = [f'{name}="{entry["value"]}"' for name, entry in sorted(vault.entries(tag=args.tag).items())]
@@ -97,6 +104,11 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("delete", help="delete a secret")
     p.add_argument("name")
     p.set_defaults(func=cmd_delete)
+
+    p = sub.add_parser("rename", help="rename a secret")
+    p.add_argument("old")
+    p.add_argument("new")
+    p.set_defaults(func=cmd_rename)
 
     p = sub.add_parser("export", help="export secrets as a .env file")
     p.add_argument("-t", "--tag")
