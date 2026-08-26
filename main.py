@@ -60,9 +60,15 @@ def cmd_rename(args):
     print(f"Secret '{args.old}' renamed to '{args.new}'.")
 
 
+def dotenv_quote(value: str) -> str:
+    escaped = value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+    return f'"{escaped}"'
+
+
 def cmd_export(args):
     vault = Vault.open(args.vault, ask_password())
-    lines = [f'{name}="{entry["value"]}"' for name, entry in sorted(vault.entries(tag=args.tag).items())]
+    entries = sorted(vault.entries(tag=args.tag).items())
+    lines = [f"{name}={dotenv_quote(entry['value'])}" for name, entry in entries]
     content = "\n".join(lines) + "\n"
     if args.output:
         Path(args.output).write_text(content)
