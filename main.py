@@ -6,7 +6,7 @@ import getpass
 import sys
 from pathlib import Path
 
-from keyvault import __version__
+from keyvault import __version__, clipboard
 from keyvault.crypto import InvalidPassword
 from keyvault.generator import generate_password, generate_token
 from keyvault.storage import DEFAULT_VAULT_PATH, Vault, VaultError
@@ -36,7 +36,12 @@ def cmd_add(args):
 
 def cmd_get(args):
     vault = Vault.open(args.vault, ask_password())
-    print(vault.get(args.name))
+    value = vault.get(args.name)
+    if args.clip:
+        tool = clipboard.copy(value)
+        print(f"Copied '{args.name}' to the clipboard ({tool}).")
+    else:
+        print(value)
 
 
 def cmd_list(args):
@@ -101,6 +106,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("get", help="print a secret")
     p.add_argument("name")
+    p.add_argument("-c", "--clip", action="store_true", help="copy to the clipboard instead of printing")
     p.set_defaults(func=cmd_get)
 
     p = sub.add_parser("list", help="list secrets")
@@ -136,7 +142,7 @@ def main(argv=None) -> int:
     except InvalidPassword:
         print("Wrong password.", file=sys.stderr)
         return 1
-    except VaultError as exc:
+    except (VaultError, clipboard.ClipboardError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
     return 0
