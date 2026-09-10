@@ -32,3 +32,9 @@ If the value is omitted, `add` prompts for it so it does not end up in your shel
 
 The vault is stored in `~/.keyvault/vault.json` by default. Use `--vault PATH` to
 work with another file.
+
+## Tests
+
+```
+python -m unittest
+```
